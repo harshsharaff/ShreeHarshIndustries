@@ -205,140 +205,166 @@ function Hero() {
 }
 
 /**
- * The centerpiece — a large 3D corrugated box that:
- * - auto-folds/unfolds on a slow loop
- * - tilts toward the user's cursor
- * - responds to click (snaps open/closed)
+ * Centerpiece — an isometric stack of corrugated boxes.
+ * - Cursor tilts the whole stack (parallax).
+ * - Hover a box to lift it out of the stack.
+ * - Click anywhere to shuffle the stack (spring re-order).
+ * No 3D-flap math, no glitching.
  */
 function HeroBox() {
-  const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const rotX = useMotionValue(15);
-  const rotY = useMotionValue(-20);
-  const sx = useSpring(rotX, { stiffness: 80, damping: 15 });
-  const sy = useSpring(rotY, { stiffness: 80, damping: 15 });
-
-  // Auto fold/unfold loop
-  useEffect(() => {
-    const id = setInterval(() => setOpen((o) => !o), 2600);
-    return () => clearInterval(id);
-  }, []);
-
-  // Idle wobble
-  useEffect(() => {
-    const controlsX = animate(rotX, [15, 22, 15], { duration: 6, repeat: Infinity, ease: "easeInOut" });
-    const controlsY = animate(rotY, [-20, -12, -20], { duration: 7, repeat: Infinity, ease: "easeInOut" });
-    return () => {
-      controlsX.stop();
-      controlsY.stop();
-    };
-  }, [rotX, rotY]);
+  const rotX = useSpring(useMotionValue(0), { stiffness: 120, damping: 18 });
+  const rotY = useSpring(useMotionValue(0), { stiffness: 120, damping: 18 });
+  const [shuffle, setShuffle] = useState(0);
+  const [hover, setHover] = useState<number | null>(null);
 
   function handleMove(e: React.MouseEvent) {
     const rect = wrapRef.current?.getBoundingClientRect();
     if (!rect) return;
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
-    rotY.set(-20 + px * 40);
-    rotX.set(15 - py * 30);
+    rotY.set(px * 20);
+    rotX.set(-py * 15);
   }
 
-  const flaps = [
-    { side: "top", rot: open ? -155 : -5, w: "100%", h: "50%", t: 0, l: 0, o: "bottom", axis: "X" },
-    { side: "bottom", rot: open ? 155 : 5, w: "100%", h: "50%", t: "50%", l: 0, o: "top", axis: "X" },
-    { side: "left", rot: open ? 155 : 5, w: "50%", h: "100%", t: 0, l: 0, o: "right", axis: "Y" },
-    { side: "right", rot: open ? -155 : -5, w: "50%", h: "100%", t: 0, l: "50%", o: "left", axis: "Y" },
-  ] as const;
+  // Six boxes at different depths + offsets. Shuffle rotates the sizes.
+  const bases = [
+    { size: 150, x: -110, y: 60, z: -40, r: -8 },
+    { size: 170, x: 90, y: 40, z: -20, r: 6 },
+    { size: 130, x: -60, y: -70, z: 40, r: -4 },
+    { size: 200, x: 40, y: -30, z: 20, r: 3 },
+    { size: 110, x: 140, y: -80, z: 60, r: 10 },
+    { size: 140, x: -140, y: -20, z: 0, r: -2 },
+  ];
+  const boxes = bases.map((b, i) => bases[(i + shuffle) % bases.length]!);
 
   return (
     <div
       ref={wrapRef}
       onMouseMove={handleMove}
       onMouseLeave={() => {
-        rotX.set(15);
-        rotY.set(-20);
+        rotX.set(0);
+        rotY.set(0);
+        setHover(null);
       }}
-      onClick={() => setOpen((o) => !o)}
-      className="relative my-10 h-[300px] sm:h-[380px] w-full cursor-pointer select-none"
-      style={{ perspective: 1200 }}
-      aria-label="Interactive corrugated box"
+      onClick={() => setShuffle((s) => s + 1)}
+      className="relative my-8 h-[340px] sm:h-[400px] w-full cursor-pointer select-none"
+      style={{ perspective: 1400 }}
+      aria-label="Interactive stack of corrugated boxes"
     >
       <motion.div
-        className="relative mx-auto"
-        style={{
-          transformStyle: "preserve-3d",
-          width: 260,
-          height: 260,
-          rotateX: sx,
-          rotateY: sy,
-        }}
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ transformStyle: "preserve-3d", rotateX: rotX, rotateY: rotY }}
       >
-        {/* inner base */}
-        <div
-          className="absolute inset-0 rounded-sm bg-flute"
-          style={{
-            transform: "translateZ(-80px)",
-            background:
-              "repeating-linear-gradient(90deg, oklch(0.55 0.09 55) 0, oklch(0.55 0.09 55) 2px, oklch(0.45 0.08 55) 2px, oklch(0.45 0.08 55) 4px)",
-            boxShadow: "inset 0 0 60px rgba(0,0,0,0.4)",
-          }}
-        />
-        {/* four side walls */}
-        {[
-          { rot: "rotateY(90deg)", tx: "-130px", w: 260, h: 160 },
-          { rot: "rotateY(-90deg)", tx: "130px", w: 260, h: 160 },
-          { rot: "rotateX(-90deg)", ty: "-130px", w: 260, h: 160 },
-          { rot: "rotateX(90deg)", ty: "130px", w: 260, h: 160 },
-        ].map((w, i) => (
-          <div
+        {boxes.map((b, i) => (
+          <IsoBox
             key={i}
-            className="absolute bg-kraft"
-            style={{
-              width: w.w,
-              height: w.h,
-              top: "50%",
-              left: "50%",
-              marginTop: -w.h / 2,
-              marginLeft: -w.w / 2,
-              transform: `${w.rot} translateZ(${w.tx ?? w.ty ?? "0"})`,
-              boxShadow: "inset 0 0 40px rgba(0,0,0,0.25)",
-            }}
-          />
-        ))}
-        {/* four flaps */}
-        {flaps.map((f, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            initial={false}
-            animate={{ [`rotate${f.axis}`]: f.rot } as any}
-            transition={{ type: "spring", stiffness: 55, damping: 14 }}
-            style={{
-              width: f.w,
-              height: f.h,
-              top: f.t,
-              left: f.l,
-              transformOrigin: f.o,
-              backgroundColor: "oklch(0.78 0.08 70)",
-              backgroundImage:
-                "repeating-linear-gradient(0deg, transparent 0 14px, rgba(0,0,0,0.06) 14px 15px)",
-              boxShadow: "inset 0 0 30px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.15)",
-            }}
+            {...b}
+            index={i}
+            hovered={hover === i}
+            onHover={() => setHover(i)}
           />
         ))}
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="absolute bottom-0 left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
-      >
-        Move · Click · Watch it fold
-      </motion.div>
+      <div className="absolute bottom-0 left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+        Move · Hover · Click to shuffle
+      </div>
     </div>
   );
 }
+
+function IsoBox({
+  size,
+  x,
+  y,
+  z,
+  r,
+  index,
+  hovered,
+  onHover,
+}: {
+  size: number;
+  x: number;
+  y: number;
+  z: number;
+  r: number;
+  index: number;
+  hovered: boolean;
+  onHover: () => void;
+}) {
+  const depth = Math.round(size * 0.55);
+  return (
+    <motion.div
+      onMouseEnter={onHover}
+      className="absolute"
+      initial={false}
+      animate={{
+        x,
+        y: hovered ? y - 18 : y,
+        z: hovered ? z + 40 : z,
+        rotateZ: r,
+        scale: hovered ? 1.05 : 1,
+      }}
+      transition={{ type: "spring", stiffness: 140, damping: 16, delay: index * 0.02 }}
+      style={{ width: size, height: size, transformStyle: "preserve-3d" }}
+    >
+      {/* Top face */}
+      <div
+        className="absolute inset-x-0 top-0"
+        style={{
+          height: depth,
+          transform: `rotateX(60deg) translateZ(${depth / 2}px)`,
+          transformOrigin: "top",
+          background:
+            "linear-gradient(180deg, oklch(0.82 0.08 70), oklch(0.72 0.08 65))",
+          boxShadow: "inset 0 0 24px rgba(0,0,0,0.15)",
+        }}
+      >
+        {/* Tape seam */}
+        <div
+          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
+          style={{
+            width: 10,
+            background: "oklch(0.9 0.02 80 / 0.55)",
+            boxShadow: "0 0 6px rgba(0,0,0,0.15)",
+          }}
+        />
+      </div>
+
+      {/* Front face */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, oklch(0.75 0.08 68), oklch(0.6 0.09 60))",
+          boxShadow: "inset 0 0 30px rgba(0,0,0,0.25)",
+          backgroundImage:
+            "repeating-linear-gradient(90deg, transparent 0 10px, rgba(0,0,0,0.05) 10px 11px)",
+        }}
+      >
+        {/* Little brand mark */}
+        <div className="absolute bottom-2 right-2 text-[8px] uppercase tracking-widest text-black/40">
+          SHP
+        </div>
+      </div>
+
+      {/* Right face */}
+      <div
+        className="absolute inset-y-0 right-0"
+        style={{
+          width: depth,
+          transform: `rotateY(90deg) translateZ(${depth / 2}px)`,
+          transformOrigin: "right",
+          background:
+            "linear-gradient(180deg, oklch(0.6 0.09 58), oklch(0.5 0.09 55))",
+          boxShadow: "inset 0 0 24px rgba(0,0,0,0.35)",
+        }}
+      />
+    </motion.div>
+  );
+}
+
 
 function Marquee() {
   const items = ["Fully Automatic Plant", "5-Ply Corrugation", "Custom Die-Cut", "In-house Testing", "GSM · BCT · ECT", "Same-Day Dispatch"];
