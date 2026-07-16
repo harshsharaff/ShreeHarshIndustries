@@ -364,9 +364,7 @@ function IsoBox({
     </motion.div>
   );
 }
-    </div>
-  );
-}
+
 
 function Marquee() {
   const items = ["Fully Automatic Plant", "5-Ply Corrugation", "Custom Die-Cut", "In-house Testing", "GSM · BCT · ECT", "Same-Day Dispatch"];
