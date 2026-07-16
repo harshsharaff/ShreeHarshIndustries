@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, useSpring, useMotionValue, animate } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import {
   Package,
   Factory,
@@ -14,7 +14,6 @@ import {
   ArrowRight,
   ArrowUpRight,
 } from "lucide-react";
-import heroBoxes from "@/assets/hero-boxes.jpg";
 import fluteTexture from "@/assets/flute-texture.jpg";
 import factory from "@/assets/factory.jpg";
 import boxRsc from "@/assets/box-rsc.jpg";
@@ -120,13 +119,8 @@ function Nav() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/70 border-b border-border/60">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#top" className="flex items-center gap-2">
-          <span className="font-display text-xl font-semibold tracking-tight text-primary">
-            Shree Harsh
-          </span>
-          <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground hidden sm:inline">
-            Packaging
-          </span>
+        <a href="#top" className="font-display text-xl font-semibold tracking-tight text-primary">
+          Shree Harsh <span className="text-accent">Packaging</span>
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
           <a href="#products" className="hover:text-foreground transition-colors">Products</a>
@@ -136,7 +130,7 @@ function Nav() {
         </nav>
         <a
           href="tel:+919379421073"
-          className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground text-sm px-4 py-2 hover:bg-accent transition-colors"
+          className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground text-sm px-4 py-2 hover:bg-accent transition-colors"
         >
           <Phone className="w-3.5 h-3.5" /> 093794 21073
         </a>
@@ -148,130 +142,201 @@ function Nav() {
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -80]);
 
   return (
-    <section id="top" ref={ref} className="relative min-h-screen pt-16 flex items-center">
+    <section
+      id="top"
+      ref={ref}
+      className="relative min-h-screen pt-16 flex items-center overflow-hidden bg-gradient-to-b from-secondary via-background to-background"
+    >
+      {/* Ambient flute stripes */}
+      <div className="absolute inset-0 bg-flute opacity-[0.08] -z-10" />
+      {/* Glow */}
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full bg-accent/10 blur-3xl -z-10" />
+
       <motion.div
-        style={{ y, scale }}
-        className="absolute inset-0 -z-10"
+        style={{ y: textY }}
+        className="relative max-w-6xl mx-auto px-6 py-20 text-center flex flex-col items-center"
       >
-        <img
-          src={heroBoxes}
-          alt="Stacked corrugated boxes in warehouse"
-          className="w-full h-full object-cover"
-          width={1600}
-          height={1200}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" />
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-accent"
+        >
+          <span className="w-8 h-px bg-accent" /> Tumkur · Karnataka <span className="w-8 h-px bg-accent" />
+        </motion.p>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.8 }}
+          className="mt-6 font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.9] text-balance max-w-4xl"
+        >
+          Boxes, <span className="italic text-accent">engineered</span> to fit.
+        </motion.h1>
+
+        <HeroBox />
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="mt-2 flex flex-wrap justify-center gap-4"
+        >
+          <a
+            href="#products"
+            className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 hover:bg-accent transition-colors"
+          >
+            Explore products
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+          <a
+            href="#contact"
+            className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-6 py-3 hover:border-foreground/60 transition-colors"
+          >
+            Request a quote
+          </a>
+        </motion.div>
       </motion.div>
-
-      <div className="max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-12 gap-10 items-center">
-        <div className="lg:col-span-8">
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-accent"
-          >
-            <span className="w-8 h-px bg-accent" /> Tumkur · Karnataka
-          </motion.p>
-          <h1 className="mt-6 font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.95] text-balance">
-            Precision packaging,{" "}
-            <span className="italic text-accent">folded to fit</span> your product.
-          </h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="mt-6 max-w-xl text-lg text-muted-foreground"
-          >
-            Shree Harsh Packaging manufactures quality corrugated boxes on a fully automatic plant.
-            Full satisfaction to our customer is our aim.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="mt-10 flex flex-wrap gap-4"
-          >
-            <a
-              href="#products"
-              className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 hover:bg-accent transition-colors"
-            >
-              Our products
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-6 py-3 hover:border-foreground/60 transition-colors"
-            >
-              Request a quote
-            </a>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Interactive folding box */}
-      <div className="hidden lg:block absolute right-10 bottom-24">
-        <FoldingBox />
-      </div>
     </section>
   );
 }
 
-function FoldingBox() {
-  const [open, setOpen] = useState(true);
+/**
+ * The centerpiece — a large 3D corrugated box that:
+ * - auto-folds/unfolds on a slow loop
+ * - tilts toward the user's cursor
+ * - responds to click (snaps open/closed)
+ */
+function HeroBox() {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const rotX = useMotionValue(15);
+  const rotY = useMotionValue(-20);
+  const sx = useSpring(rotX, { stiffness: 80, damping: 15 });
+  const sy = useSpring(rotY, { stiffness: 80, damping: 15 });
+
+  // Auto fold/unfold loop
+  useEffect(() => {
+    const id = setInterval(() => setOpen((o) => !o), 2600);
+    return () => clearInterval(id);
+  }, []);
+
+  // Idle wobble
+  useEffect(() => {
+    const controlsX = animate(rotX, [15, 22, 15], { duration: 6, repeat: Infinity, ease: "easeInOut" });
+    const controlsY = animate(rotY, [-20, -12, -20], { duration: 7, repeat: Infinity, ease: "easeInOut" });
+    return () => {
+      controlsX.stop();
+      controlsY.stop();
+    };
+  }, [rotX, rotY]);
+
+  function handleMove(e: React.MouseEvent) {
+    const rect = wrapRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const px = (e.clientX - rect.left) / rect.width - 0.5;
+    const py = (e.clientY - rect.top) / rect.height - 0.5;
+    rotY.set(-20 + px * 40);
+    rotX.set(15 - py * 30);
+  }
+
+  const flaps = [
+    { side: "top", rot: open ? -155 : -5, w: "100%", h: "50%", t: 0, l: 0, o: "bottom", axis: "X" },
+    { side: "bottom", rot: open ? 155 : 5, w: "100%", h: "50%", t: "50%", l: 0, o: "top", axis: "X" },
+    { side: "left", rot: open ? 155 : 5, w: "50%", h: "100%", t: 0, l: 0, o: "right", axis: "Y" },
+    { side: "right", rot: open ? -155 : -5, w: "50%", h: "100%", t: 0, l: "50%", o: "left", axis: "Y" },
+  ] as const;
+
   return (
-    <motion.button
+    <div
+      ref={wrapRef}
+      onMouseMove={handleMove}
+      onMouseLeave={() => {
+        rotX.set(15);
+        rotY.set(-20);
+      }}
       onClick={() => setOpen((o) => !o)}
-      className="relative w-56 h-56"
-      style={{ perspective: 800 }}
-      aria-label="Fold and unfold a corrugated box"
+      className="relative my-10 h-[300px] sm:h-[380px] w-full cursor-pointer select-none"
+      style={{ perspective: 1200 }}
+      aria-label="Interactive corrugated box"
     >
       <motion.div
-        animate={{ rotateX: open ? 20 : 0, rotateY: open ? -25 : 0 }}
-        transition={{ type: "spring", stiffness: 60, damping: 15 }}
-        className="relative w-full h-full"
-        style={{ transformStyle: "preserve-3d" }}
+        className="relative mx-auto"
+        style={{
+          transformStyle: "preserve-3d",
+          width: 260,
+          height: 260,
+          rotateX: sx,
+          rotateY: sy,
+        }}
       >
-        {/* base */}
+        {/* inner base */}
         <div
-          className="absolute inset-0 bg-kraft rounded-sm shadow-2xl"
-          style={{ transform: "translateZ(-40px)" }}
+          className="absolute inset-0 rounded-sm bg-flute"
+          style={{
+            transform: "translateZ(-80px)",
+            background:
+              "repeating-linear-gradient(90deg, oklch(0.55 0.09 55) 0, oklch(0.55 0.09 55) 2px, oklch(0.45 0.08 55) 2px, oklch(0.45 0.08 55) 4px)",
+            boxShadow: "inset 0 0 60px rgba(0,0,0,0.4)",
+          }}
         />
-        {/* four flaps */}
+        {/* four side walls */}
         {[
-          { side: "top", rot: open ? -100 : 0, origin: "bottom" },
-          { side: "bottom", rot: open ? 100 : 0, origin: "top" },
-          { side: "left", rot: open ? 100 : 0, origin: "right" },
-          { side: "right", rot: open ? -100 : 0, origin: "left" },
-        ].map((f, i) => (
+          { rot: "rotateY(90deg)", tx: "-130px", w: 260, h: 160 },
+          { rot: "rotateY(-90deg)", tx: "130px", w: 260, h: 160 },
+          { rot: "rotateX(-90deg)", ty: "-130px", w: 260, h: 160 },
+          { rot: "rotateX(90deg)", ty: "130px", w: 260, h: 160 },
+        ].map((w, i) => (
+          <div
+            key={i}
+            className="absolute bg-kraft"
+            style={{
+              width: w.w,
+              height: w.h,
+              top: "50%",
+              left: "50%",
+              marginTop: -w.h / 2,
+              marginLeft: -w.w / 2,
+              transform: `${w.rot} translateZ(${w.tx ?? w.ty ?? "0"})`,
+              boxShadow: "inset 0 0 40px rgba(0,0,0,0.25)",
+            }}
+          />
+        ))}
+        {/* four flaps */}
+        {flaps.map((f, i) => (
           <motion.div
             key={i}
-            className="absolute bg-kraft-deep/90 bg-flute"
+            className="absolute"
             initial={false}
-            animate={{
-              rotateX: f.side === "top" || f.side === "bottom" ? f.rot : 0,
-              rotateY: f.side === "left" || f.side === "right" ? f.rot : 0,
-            }}
-            transition={{ type: "spring", stiffness: 50, damping: 12 }}
+            animate={{ [`rotate${f.axis}`]: f.rot } as any}
+            transition={{ type: "spring", stiffness: 55, damping: 14 }}
             style={{
-              width: f.side === "left" || f.side === "right" ? "50%" : "100%",
-              height: f.side === "top" || f.side === "bottom" ? "50%" : "100%",
-              top: f.side === "top" ? 0 : f.side === "bottom" ? "50%" : 0,
-              left: f.side === "left" ? 0 : f.side === "right" ? "50%" : 0,
-              transformOrigin: f.origin,
-              boxShadow: "inset 0 0 30px rgba(0,0,0,0.15)",
+              width: f.w,
+              height: f.h,
+              top: f.t,
+              left: f.l,
+              transformOrigin: f.o,
+              backgroundColor: "oklch(0.78 0.08 70)",
+              backgroundImage:
+                "repeating-linear-gradient(0deg, transparent 0 14px, rgba(0,0,0,0.06) 14px 15px)",
+              boxShadow: "inset 0 0 30px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.15)",
             }}
           />
         ))}
       </motion.div>
-      <span className="absolute -bottom-8 left-0 right-0 text-xs uppercase tracking-widest text-muted-foreground">
-        {open ? "Click to fold" : "Click to open"}
-      </span>
-    </motion.button>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+        className="absolute bottom-0 left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
+      >
+        Move · Click · Watch it fold
+      </motion.div>
+    </div>
   );
 }
 
