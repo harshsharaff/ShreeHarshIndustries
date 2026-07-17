@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { motion, useScroll, useTransform, useSpring, useMotionValue, animate } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef } from "react";
 import {
   Package,
   Factory,
@@ -19,6 +19,8 @@ import factory from "@/assets/factory.jpg";
 import boxRsc from "@/assets/box-rsc.jpg";
 import boxCcf from "@/assets/box-ccf.jpg";
 import boxPartitions from "@/assets/box-partitions.jpg";
+import { Nav, Footer } from "@/components/site-chrome";
+import { HeroConveyor } from "@/components/HeroConveyor";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -34,9 +36,9 @@ export const Route = createFileRoute("/")({
 });
 
 const stats = [
-  { value: "25+", label: "Years of craft" },
+  { value: "25+", label: "Years of experience" },
   { value: "3000T", label: "Monthly capacity" },
-  { value: "5-Ply", label: "Automatic plant" },
+  { value: "5 Ply", label: "Automatic plant" },
   { value: "250 KVA", label: "Power backup" },
 ];
 
@@ -45,29 +47,29 @@ const products = [
     title: "Regular Slotted Container",
     tag: "RSC",
     img: boxRsc,
-    desc: "The industry-standard corrugated box built for safe storage and transport. Balanced flap geometry delivers strong stacking strength at an efficient cost.",
+    desc: "The industry standard corrugated box designed for safe storage and transportation. Its simple flap structure provides strong stacking strength and cost efficient packaging for a wide range of products.",
   },
   {
     title: "Corner Cut Folder",
     tag: "CCF",
     img: boxCcf,
-    desc: "Single-piece corrugated folders with corner cuts. Ideal for wrapping flat or narrow products securely with minimal material.",
+    desc: "Single piece corrugated folders with corner cuts, ideal for wrapping flat or narrow products securely.",
   },
   {
-    title: "Partitions & Dividers",
+    title: "Partitions and Dividers",
     tag: "INSERTS",
     img: boxPartitions,
-    desc: "Corrugated internal fittings that separate and cushion multiple items inside a single carton — engineered per SKU.",
+    desc: "Corrugated internal fittings used to separate and protect multiple items inside a single carton.",
   },
 ];
 
 const industries = [
   "Garment Manufacturing",
-  "Pharmaceuticals",
+  "Pharmaceutical Industries",
   "FMCG",
   "Textiles",
-  "Engineering",
-  "Fruits & Vegetables",
+  "Engineering Industries",
+  "Fruits and Vegetables",
   "Beverages",
   "Processed Food",
   "Electronics",
@@ -80,7 +82,7 @@ const reasons = [
   {
     icon: Factory,
     title: "Integrated plant",
-    body: "From corrugation to dispatch under one roof — no outsourced steps, no quality drift.",
+    body: "From corrugation to dispatch under one roof. No outsourced steps, no quality drift.",
   },
   {
     icon: ShieldCheck,
@@ -94,8 +96,8 @@ const reasons = [
   },
   {
     icon: Leaf,
-    title: "100% recyclable",
-    body: "Kraft-based, fully recyclable material — packaging that returns to the loop.",
+    title: "100 percent recyclable",
+    body: "Kraft based, fully recyclable material. Packaging that returns to the loop.",
   },
 ];
 
@@ -115,30 +117,6 @@ function Home() {
   );
 }
 
-function Nav() {
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/70 border-b border-border/60">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="#top" className="font-display text-xl font-semibold tracking-tight text-primary">
-          Shree Harsh <span className="text-accent">Packaging</span>
-        </a>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          <a href="#products" className="hover:text-foreground transition-colors">Products</a>
-          <a href="#industries" className="hover:text-foreground transition-colors">Industries</a>
-          <a href="#why" className="hover:text-foreground transition-colors">Why us</a>
-          <a href="#contact" className="hover:text-foreground transition-colors">Contact</a>
-        </nav>
-        <a
-          href="tel:+919379421073"
-          className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground text-sm px-4 py-2 hover:bg-accent transition-colors"
-        >
-          <Phone className="w-3.5 h-3.5" /> 093794 21073
-        </a>
-      </div>
-    </header>
-  );
-}
-
 function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -150,9 +128,7 @@ function Hero() {
       ref={ref}
       className="relative min-h-screen pt-16 flex items-center overflow-hidden bg-gradient-to-b from-secondary via-background to-background"
     >
-      {/* Ambient flute stripes */}
       <div className="absolute inset-0 bg-flute opacity-[0.08] -z-10" />
-      {/* Glow */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full bg-accent/10 blur-3xl -z-10" />
 
       <motion.div
@@ -165,7 +141,7 @@ function Hero() {
           transition={{ duration: 0.6 }}
           className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-accent"
         >
-          <span className="w-8 h-px bg-accent" /> Tumkur · Karnataka <span className="w-8 h-px bg-accent" />
+          <span className="w-8 h-px bg-accent" /> Tumkur, Karnataka <span className="w-8 h-px bg-accent" />
         </motion.p>
 
         <motion.h1
@@ -174,10 +150,12 @@ function Hero() {
           transition={{ delay: 0.15, duration: 0.8 }}
           className="mt-6 font-display text-5xl sm:text-7xl lg:text-8xl leading-[0.9] text-balance max-w-4xl"
         >
-          Boxes, <span className="italic text-accent">engineered</span> to fit.
+          Precision packaging, <span className="italic text-accent">engineered</span> for scale.
         </motion.h1>
 
-        <HeroBox />
+        <div className="my-8 w-full">
+          <HeroConveyor />
+        </div>
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -185,189 +163,27 @@ function Hero() {
           transition={{ delay: 0.9, duration: 0.6 }}
           className="mt-2 flex flex-wrap justify-center gap-4"
         >
-          <a
-            href="#products"
+          <Link
+            to="/products"
             className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 hover:bg-accent transition-colors"
           >
-            Explore products
+            Our Products
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
-          <a
-            href="#contact"
+          </Link>
+          <Link
+            to="/contact"
             className="inline-flex items-center gap-2 rounded-full border border-foreground/20 px-6 py-3 hover:border-foreground/60 transition-colors"
           >
-            Request a quote
-          </a>
+            Contact Us
+          </Link>
         </motion.div>
       </motion.div>
     </section>
   );
 }
 
-/**
- * Centerpiece — an isometric stack of corrugated boxes.
- * - Cursor tilts the whole stack (parallax).
- * - Hover a box to lift it out of the stack.
- * - Click anywhere to shuffle the stack (spring re-order).
- * No 3D-flap math, no glitching.
- */
-function HeroBox() {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const rotX = useSpring(useMotionValue(0), { stiffness: 120, damping: 18 });
-  const rotY = useSpring(useMotionValue(0), { stiffness: 120, damping: 18 });
-  const [shuffle, setShuffle] = useState(0);
-  const [hover, setHover] = useState<number | null>(null);
-
-  function handleMove(e: React.MouseEvent) {
-    const rect = wrapRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    rotY.set(px * 20);
-    rotX.set(-py * 15);
-  }
-
-  // Six boxes at different depths + offsets. Shuffle rotates the sizes.
-  const bases = [
-    { size: 150, x: -110, y: 60, z: -40, r: -8 },
-    { size: 170, x: 90, y: 40, z: -20, r: 6 },
-    { size: 130, x: -60, y: -70, z: 40, r: -4 },
-    { size: 200, x: 40, y: -30, z: 20, r: 3 },
-    { size: 110, x: 140, y: -80, z: 60, r: 10 },
-    { size: 140, x: -140, y: -20, z: 0, r: -2 },
-  ];
-  const boxes = bases.map((b, i) => bases[(i + shuffle) % bases.length]!);
-
-  return (
-    <div
-      ref={wrapRef}
-      onMouseMove={handleMove}
-      onMouseLeave={() => {
-        rotX.set(0);
-        rotY.set(0);
-        setHover(null);
-      }}
-      onClick={() => setShuffle((s) => s + 1)}
-      className="relative my-8 h-[340px] sm:h-[400px] w-full cursor-pointer select-none"
-      style={{ perspective: 1400 }}
-      aria-label="Interactive stack of corrugated boxes"
-    >
-      <motion.div
-        className="absolute inset-0 flex items-center justify-center"
-        style={{ transformStyle: "preserve-3d", rotateX: rotX, rotateY: rotY }}
-      >
-        {boxes.map((b, i) => (
-          <IsoBox
-            key={i}
-            {...b}
-            index={i}
-            hovered={hover === i}
-            onHover={() => setHover(i)}
-          />
-        ))}
-      </motion.div>
-
-      <div className="absolute bottom-0 left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-        Move · Hover · Click to shuffle
-      </div>
-    </div>
-  );
-}
-
-function IsoBox({
-  size,
-  x,
-  y,
-  z,
-  r,
-  index,
-  hovered,
-  onHover,
-}: {
-  size: number;
-  x: number;
-  y: number;
-  z: number;
-  r: number;
-  index: number;
-  hovered: boolean;
-  onHover: () => void;
-}) {
-  const depth = Math.round(size * 0.55);
-  return (
-    <motion.div
-      onMouseEnter={onHover}
-      className="absolute"
-      initial={false}
-      animate={{
-        x,
-        y: hovered ? y - 18 : y,
-        z: hovered ? z + 40 : z,
-        rotateZ: r,
-        scale: hovered ? 1.05 : 1,
-      }}
-      transition={{ type: "spring", stiffness: 140, damping: 16, delay: index * 0.02 }}
-      style={{ width: size, height: size, transformStyle: "preserve-3d" }}
-    >
-      {/* Top face */}
-      <div
-        className="absolute inset-x-0 top-0"
-        style={{
-          height: depth,
-          transform: `rotateX(60deg) translateZ(${depth / 2}px)`,
-          transformOrigin: "top",
-          background:
-            "linear-gradient(180deg, oklch(0.82 0.08 70), oklch(0.72 0.08 65))",
-          boxShadow: "inset 0 0 24px rgba(0,0,0,0.15)",
-        }}
-      >
-        {/* Tape seam */}
-        <div
-          className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2"
-          style={{
-            width: 10,
-            background: "oklch(0.9 0.02 80 / 0.55)",
-            boxShadow: "0 0 6px rgba(0,0,0,0.15)",
-          }}
-        />
-      </div>
-
-      {/* Front face */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(180deg, oklch(0.75 0.08 68), oklch(0.6 0.09 60))",
-          boxShadow: "inset 0 0 30px rgba(0,0,0,0.25)",
-          backgroundImage:
-            "repeating-linear-gradient(90deg, transparent 0 10px, rgba(0,0,0,0.05) 10px 11px)",
-        }}
-      >
-        {/* Little brand mark */}
-        <div className="absolute bottom-2 right-2 text-[8px] uppercase tracking-widest text-black/40">
-          SHP
-        </div>
-      </div>
-
-      {/* Right face */}
-      <div
-        className="absolute inset-y-0 right-0"
-        style={{
-          width: depth,
-          transform: `rotateY(90deg) translateZ(${depth / 2}px)`,
-          transformOrigin: "right",
-          background:
-            "linear-gradient(180deg, oklch(0.6 0.09 58), oklch(0.5 0.09 55))",
-          boxShadow: "inset 0 0 24px rgba(0,0,0,0.35)",
-        }}
-      />
-    </motion.div>
-  );
-}
-
-
 function Marquee() {
-  const items = ["Fully Automatic Plant", "5-Ply Corrugation", "Custom Die-Cut", "In-house Testing", "GSM · BCT · ECT", "Same-Day Dispatch"];
+  const items = ["Fully Automatic Plant", "5 Ply Corrugation", "Custom Die Cut", "In-house Testing", "GSM · BCT · ECT", "Same Day Dispatch"];
   return (
     <div className="border-y border-border bg-primary text-primary-foreground overflow-hidden">
       <motion.div
@@ -415,13 +231,13 @@ function Products() {
     <section id="products" className="max-w-7xl mx-auto px-6 py-24">
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-accent">01 — Products</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-accent">01 Products</p>
           <h2 className="mt-4 text-4xl sm:text-5xl max-w-2xl text-balance">
             A complete range, engineered per SKU.
           </h2>
         </div>
         <p className="max-w-md text-muted-foreground">
-          Precision-cut corrugated packaging that protects, transports and presents your product
+          Precision cut corrugated packaging that protects, transports and presents your product
           with consistency and strength.
         </p>
       </div>
@@ -430,6 +246,12 @@ function Products() {
         {products.map((p, i) => (
           <ProductCard key={p.tag} p={p} i={i} />
         ))}
+      </div>
+
+      <div className="mt-12 text-center">
+        <Link to="/products" className="inline-flex items-center gap-2 text-accent hover:underline">
+          View all products <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     </section>
   );
@@ -480,9 +302,9 @@ function Industries() {
       </div>
       <div className="max-w-7xl mx-auto px-6">
         <div className="max-w-2xl">
-          <p className="text-xs uppercase tracking-[0.3em] text-accent">02 — Industries</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-accent">02 Industries</p>
           <h2 className="mt-4 text-4xl sm:text-5xl text-balance">
-            From cold-chain to e-commerce — structural integrity brands trust.
+            From cold chain to e commerce, structural integrity brands trust.
           </h2>
         </div>
 
@@ -514,7 +336,7 @@ function WhyUs() {
 
   return (
     <section id="why" ref={ref} className="max-w-7xl mx-auto px-6 py-24 grid lg:grid-cols-2 gap-16 items-center">
-      <motion.div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-muted" style={{}}>
+      <motion.div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-muted">
         <motion.img
           src={factory}
           alt="Automated corrugated box plant"
@@ -527,7 +349,7 @@ function WhyUs() {
       </motion.div>
 
       <div>
-        <p className="text-xs uppercase tracking-[0.3em] text-accent">03 — Why Shree Harsh</p>
+        <p className="text-xs uppercase tracking-[0.3em] text-accent">03 Why Shree Harsh</p>
         <h2 className="mt-4 text-4xl sm:text-5xl text-balance">
           Full satisfaction to our customer is our aim.
         </h2>
@@ -582,7 +404,7 @@ function CTA() {
         </div>
 
         <div className="mt-10 text-sm text-primary-foreground/60 max-w-xl mx-auto">
-          Work Site: Plot No 672, Vasantha Narasapura Industrial Area, 2nd Phase Sub Layout, Tumkur — 572128
+          Work Site: Plot No 672, Vasantha Narasapura Industrial Area, 2nd Phase Sub Layout, Tumkur 572128
         </div>
       </div>
     </section>
@@ -612,21 +434,5 @@ function ContactRow({
         <div className="text-sm mt-0.5">{value}</div>
       </div>
     </Comp>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-border py-10">
-      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-muted-foreground">
-        <div>
-          © {new Date().getFullYear()} Shree Harsh Packaging. Manufacturers of quality corrugated boxes.
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-          Tumkur, Karnataka
-        </div>
-      </div>
-    </footer>
   );
 }
