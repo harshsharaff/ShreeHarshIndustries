@@ -2,16 +2,14 @@ import { motion, useAnimationFrame } from "framer-motion";
 import { useRef, useState } from "react";
 
 /**
- * A side-view corrugated packaging line.
+ * Side-view corrugated packaging line.
  * - Rollers spin continuously.
  * - Boxes glide across the belt in a smooth loop.
- * - A stamp press descends and stamps SHP onto each box as it passes.
- * - Hover slows the belt; click sends a burst of speed.
- * Pure CSS transforms + rAF, no layout thrash.
+ * - A circular certification stamp descends and marks each box as it passes.
+ * - Hover slows the belt; click gives a short speed boost.
  */
 export function HeroConveyor() {
   const [hover, setHover] = useState(false);
-  const [burst, setBurst] = useState(0);
   const beltRef = useRef<HTMLDivElement>(null);
   const rollerA = useRef<HTMLDivElement>(null);
   const rollerB = useRef<HTMLDivElement>(null);
@@ -21,14 +19,16 @@ export function HeroConveyor() {
   const tRef = useRef(0);
   const rot = useRef(0);
   const stampY = useRef(0);
+  const burstRef = useRef(0); // seconds of boost remaining
 
   const boxes = [0, 1, 2, 3, 4];
   const spacing = 220;
   const beltWidth = boxes.length * spacing;
 
   useAnimationFrame((_, delta) => {
-    const boost = burst > 0 ? 2.2 : 1;
-    if (burst > 0) setTimeout(() => setBurst((b) => Math.max(0, b - 1)), 600);
+    // delta in ms
+    if (burstRef.current > 0) burstRef.current = Math.max(0, burstRef.current - delta);
+    const boost = burstRef.current > 0 ? 2.2 : 1;
     const speed = (hover ? 0.04 : 0.11) * boost;
     tRef.current = (tRef.current + delta * speed) % beltWidth;
     rot.current = (rot.current + delta * speed * 1.6) % 360;
@@ -37,28 +37,29 @@ export function HeroConveyor() {
     if (rollerB.current) rollerB.current.style.transform = `rotate(${rot.current}deg)`;
 
     let stampTarget = 0;
+    const center = beltWidth / 2;
     boxes.forEach((_, i) => {
       const el = boxRefs.current[i];
       if (!el) return;
       const raw = i * spacing - tRef.current;
       const x = ((raw % beltWidth) + beltWidth) % beltWidth;
       el.style.transform = `translate3d(${x}px, 0, 0)`;
-      // Stamp zone: center of belt
-      const center = beltWidth / 2;
       const dist = Math.abs(x - center);
-      if (dist < 30 && !stamped.current.has(i)) {
-        stamped.current.add(i);
-        el.dataset.stamped = "true";
+      if (dist < 40) {
+        if (!stamped.current.has(i)) {
+          stamped.current.add(i);
+          el.dataset.stamped = "true";
+        }
         stampTarget = 1;
       }
-      if (x < 20) {
+      // Reset stamp memory once the box has fully cycled past
+      if (x > beltWidth - spacing * 0.5 && stamped.current.has(i)) {
         stamped.current.delete(i);
         el.dataset.stamped = "false";
       }
     });
 
-    // Simple stamp bob toward target
-    stampY.current += (stampTarget * 46 - stampY.current) * 0.35;
+    stampY.current += (stampTarget * 44 - stampY.current) * 0.35;
     if (stampRef.current) stampRef.current.style.transform = `translate3d(-50%, ${stampY.current}px, 0)`;
   });
 
@@ -66,20 +67,24 @@ export function HeroConveyor() {
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => setBurst((b) => b + 1)}
-      className="relative w-full mx-auto max-w-3xl h-[320px] sm:h-[380px] cursor-pointer select-none"
+      onClick={() => { burstRef.current = 700; }}
+      className="relative w-full mx-auto max-w-3xl h-[340px] sm:h-[400px] cursor-pointer select-none"
       aria-label="Interactive corrugated packaging line"
     >
-      {/* Stamp press */}
-      <div className="absolute left-1/2 top-4 -translate-x-1/2 flex flex-col items-center pointer-events-none">
-        <div className="w-1.5 h-16 bg-foreground/70" />
-        <div ref={stampRef} className="w-24 h-16 rounded-md bg-primary text-primary-foreground grid place-items-center shadow-[0_10px_30px_-6px_oklch(0_0_0/0.4)] font-display text-sm tracking-[0.3em]" style={{ willChange: "transform" }}>
-          SHP
+      {/* Stamp press arm */}
+      <div className="absolute left-1/2 top-2 -translate-x-1/2 flex flex-col items-center pointer-events-none">
+        <div className="w-1.5 h-14 bg-foreground/70" />
+        <div
+          ref={stampRef}
+          className="w-24 h-24 rounded-full grid place-items-center shadow-[0_10px_30px_-6px_oklch(0_0_0/0.45)]"
+          style={{ willChange: "transform", background: "oklch(0.35 0.05 40)" }}
+        >
+          <CertStamp />
         </div>
       </div>
 
       {/* Belt viewport */}
-      <div className="absolute inset-x-6 bottom-16 top-32 overflow-hidden">
+      <div className="absolute inset-x-6 bottom-16 top-36 overflow-hidden">
         <div ref={beltRef} className="absolute inset-0" style={{ willChange: "transform" }}>
           {boxes.map((_, i) => (
             <div
@@ -107,7 +112,6 @@ export function HeroConveyor() {
         <div ref={rollerB} className="w-10 h-10 rounded-full border-2 border-dashed border-primary-foreground/70" style={{ willChange: "transform" }} />
       </div>
 
-      {/* Legs */}
       <div className="absolute left-6 bottom-0 w-2 h-8 bg-foreground/60" />
       <div className="absolute right-6 bottom-0 w-2 h-8 bg-foreground/60" />
 
@@ -120,6 +124,34 @@ export function HeroConveyor() {
         Hover to slow · Click to boost
       </motion.div>
     </div>
+  );
+}
+
+/** Circular certification stamp used on the press head (inverted for readability). */
+function CertStamp({ color = "oklch(0.95 0.02 80)" }: { color?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" className="w-[88%] h-[88%]" aria-hidden>
+      <defs>
+        <path id="cs-top" d="M 50,50 m -38,0 a 38,38 0 1,1 76,0" fill="none" />
+        <path id="cs-bot" d="M 50,50 m -38,0 a 38,38 0 1,0 76,0" fill="none" />
+      </defs>
+      <circle cx="50" cy="50" r="44" fill="none" stroke={color} strokeWidth="2.2" />
+      <circle cx="50" cy="50" r="40" fill="none" stroke={color} strokeWidth="1" />
+      <text fill={color} fontFamily="serif" fontWeight="700" fontSize="9.5" letterSpacing="1.2">
+        <textPath href="#cs-top" startOffset="50%" textAnchor="middle">SHREE HARSH PACKAGING</textPath>
+      </text>
+      <text fill={color} fontFamily="serif" fontWeight="700" fontSize="8" letterSpacing="1.6">
+        <textPath href="#cs-bot" startOffset="50%" textAnchor="middle">TUMKUR · INDIA</textPath>
+      </text>
+      <line x1="20" y1="42" x2="80" y2="42" stroke={color} strokeWidth="0.8" />
+      <line x1="20" y1="60" x2="80" y2="60" stroke={color} strokeWidth="0.8" />
+      <text x="50" y="52" textAnchor="middle" fill={color} fontFamily="serif" fontWeight="800" fontSize="7.5" letterSpacing="0.6">
+        BOX CERTIFICATE
+      </text>
+      <text x="50" y="58" textAnchor="middle" fill={color} fontFamily="serif" fontSize="4.2" letterSpacing="0.3">
+        DOUBLE WALL · 5 PLY
+      </text>
+    </svg>
   );
 }
 
@@ -137,9 +169,9 @@ function Box3D() {
               "repeating-linear-gradient(90deg, transparent 0 9px, rgba(0,0,0,0.06) 9px 10px)",
           }}
         >
-          <div className="absolute inset-0 grid place-items-center opacity-0 [[data-stamped=true]_&]:opacity-100 transition-opacity duration-150">
-            <div className="font-display text-[13px] tracking-[0.3em] text-primary/80 px-2 py-1 border border-primary/50 rounded-sm bg-background/40">
-              SHP
+          <div className="absolute inset-0 grid place-items-center opacity-0 [[data-stamped=true]_&]:opacity-100 transition-opacity duration-200">
+            <div className="w-16 h-16">
+              <CertStamp color="oklch(0.28 0.06 35)" />
             </div>
           </div>
         </div>
