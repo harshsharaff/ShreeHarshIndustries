@@ -169,18 +169,19 @@ export function HeroConveyor() {
       <Roller className="right-2 bottom-6" innerRef={rollerB} />
 
       {/* Base legs */}
-      <div className="absolute left-6 bottom-0 w-2 h-8 bg-foreground/60" />
-      <div className="absolute right-6 bottom-0 w-2 h-8 bg-foreground/60" />
-      <div className="absolute inset-x-0 bottom-0 h-1 bg-foreground/40" />
+      <div className="absolute left-6 bottom-8 w-2 h-8 bg-foreground/60" />
+      <div className="absolute right-6 bottom-8 w-2 h-8 bg-foreground/60" />
+      <div className="absolute inset-x-0 bottom-8 h-1 bg-foreground/40" />
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="absolute bottom-[-8px] left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
+        className="absolute bottom-1 left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
       >
         Hover to slow · Click to boost
       </motion.div>
+
     </div>
   );
 }
