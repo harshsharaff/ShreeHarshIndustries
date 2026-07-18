@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
  */
 export function HeroConveyor() {
   const [hover, setHover] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const rollerA = useRef<HTMLDivElement>(null);
   const rollerB = useRef<HTMLDivElement>(null);
   const rollerC = useRef<HTMLDivElement>(null);
@@ -24,11 +25,12 @@ export function HeroConveyor() {
   const burstRef = useRef(0);
 
   const NUM = 5;
+  const BOX_W = 130;
   const boxes = Array.from({ length: NUM }, (_, i) => i);
   const spacing = 220;
   const beltWidth = NUM * spacing;
-  const STAMP_X = beltWidth / 2; // stamping station x-position within belt
-  const STAMP_WINDOW = 32;
+  const STAMP_WINDOW = 30;
+
 
   useAnimationFrame((_, delta) => {
     if (burstRef.current > 0) burstRef.current = Math.max(0, burstRef.current - delta);
@@ -41,6 +43,12 @@ export function HeroConveyor() {
     if (rollerB.current) rollerB.current.style.transform = `rotate(${rot.current}deg)`;
     if (rollerC.current) rollerC.current.style.transform = `rotate(${rot.current}deg)`;
 
+    // Compute STAMP_X so a box's CENTER aligns with the press center.
+    // Belt viewport is inset-x-6 (24px each side). Press sits at container center.
+    const cw = containerRef.current?.clientWidth ?? 0;
+    const pressCenterInBelt = cw / 2 - 24; // relative to belt inner-left
+    const STAMP_X = pressCenterInBelt - BOX_W / 2; // box left position when centered under press
+
     let pressTarget = 0;
     boxes.forEach((_, i) => {
       const el = boxRefs.current[i];
@@ -51,7 +59,7 @@ export function HeroConveyor() {
       const dist = Math.abs(x - STAMP_X);
       if (dist < STAMP_WINDOW) {
         pressTarget = 1;
-        if (dist < 8 && !stamped.current.has(i)) {
+        if (dist < 6 && !stamped.current.has(i)) {
           stamped.current.add(i);
           el.dataset.stamped = "true";
           sparkA.current = 1;
@@ -64,6 +72,7 @@ export function HeroConveyor() {
       }
     });
 
+
     pressY.current += (pressTarget * 46 - pressY.current) * 0.32;
     if (pistonRef.current) pistonRef.current.style.transform = `translate3d(0, ${pressY.current}px, 0)`;
     if (pressRef.current) pressRef.current.style.transform = `translate3d(-50%, ${pressY.current}px, 0)`;
@@ -74,10 +83,11 @@ export function HeroConveyor() {
 
   return (
     <div
+      ref={containerRef}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => { burstRef.current = 700; }}
-      className="relative w-full mx-auto max-w-3xl h-[360px] sm:h-[420px] cursor-pointer select-none"
+      className="relative w-full mx-auto max-w-3xl h-[380px] sm:h-[440px] pb-8 cursor-pointer select-none"
       aria-label="Interactive corrugated packaging line"
     >
       {/* Ceiling / factory beam */}
@@ -159,18 +169,19 @@ export function HeroConveyor() {
       <Roller className="right-2 bottom-6" innerRef={rollerB} />
 
       {/* Base legs */}
-      <div className="absolute left-6 bottom-0 w-2 h-8 bg-foreground/60" />
-      <div className="absolute right-6 bottom-0 w-2 h-8 bg-foreground/60" />
-      <div className="absolute inset-x-0 bottom-0 h-1 bg-foreground/40" />
+      <div className="absolute left-6 bottom-8 w-2 h-8 bg-foreground/60" />
+      <div className="absolute right-6 bottom-8 w-2 h-8 bg-foreground/60" />
+      <div className="absolute inset-x-0 bottom-8 h-1 bg-foreground/40" />
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="absolute bottom-[-8px] left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
+        className="absolute bottom-1 left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
       >
         Hover to slow · Click to boost
       </motion.div>
+
     </div>
   );
 }
