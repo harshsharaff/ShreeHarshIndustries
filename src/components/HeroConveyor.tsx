@@ -83,10 +83,11 @@ export function HeroConveyor() {
 
   return (
     <div
+      ref={containerRef}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => { burstRef.current = 700; }}
-      className="relative w-full mx-auto max-w-3xl h-[360px] sm:h-[420px] cursor-pointer select-none"
+      className="relative w-full mx-auto max-w-3xl h-[380px] sm:h-[440px] pb-8 cursor-pointer select-none"
       aria-label="Interactive corrugated packaging line"
     >
       {/* Ceiling / factory beam */}
