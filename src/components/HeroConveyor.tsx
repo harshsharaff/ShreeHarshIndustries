@@ -43,6 +43,12 @@ export function HeroConveyor() {
     if (rollerB.current) rollerB.current.style.transform = `rotate(${rot.current}deg)`;
     if (rollerC.current) rollerC.current.style.transform = `rotate(${rot.current}deg)`;
 
+    // Compute STAMP_X so a box's CENTER aligns with the press center.
+    // Belt viewport is inset-x-6 (24px each side). Press sits at container center.
+    const cw = containerRef.current?.clientWidth ?? 0;
+    const pressCenterInBelt = cw / 2 - 24; // relative to belt inner-left
+    const STAMP_X = pressCenterInBelt - BOX_W / 2; // box left position when centered under press
+
     let pressTarget = 0;
     boxes.forEach((_, i) => {
       const el = boxRefs.current[i];
@@ -53,7 +59,7 @@ export function HeroConveyor() {
       const dist = Math.abs(x - STAMP_X);
       if (dist < STAMP_WINDOW) {
         pressTarget = 1;
-        if (dist < 8 && !stamped.current.has(i)) {
+        if (dist < 6 && !stamped.current.has(i)) {
           stamped.current.add(i);
           el.dataset.stamped = "true";
           sparkA.current = 1;
@@ -65,6 +71,7 @@ export function HeroConveyor() {
         el.dataset.stamped = "false";
       }
     });
+
 
     pressY.current += (pressTarget * 46 - pressY.current) * 0.32;
     if (pistonRef.current) pistonRef.current.style.transform = `translate3d(0, ${pressY.current}px, 0)`;
