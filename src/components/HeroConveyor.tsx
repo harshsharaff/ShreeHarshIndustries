@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
  */
 export function HeroConveyor() {
   const [hover, setHover] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const rollerA = useRef<HTMLDivElement>(null);
   const rollerB = useRef<HTMLDivElement>(null);
   const rollerC = useRef<HTMLDivElement>(null);
@@ -24,11 +25,12 @@ export function HeroConveyor() {
   const burstRef = useRef(0);
 
   const NUM = 5;
+  const BOX_W = 130;
   const boxes = Array.from({ length: NUM }, (_, i) => i);
   const spacing = 220;
   const beltWidth = NUM * spacing;
-  const STAMP_X = beltWidth / 2; // stamping station x-position within belt
-  const STAMP_WINDOW = 32;
+  const STAMP_WINDOW = 30;
+
 
   useAnimationFrame((_, delta) => {
     if (burstRef.current > 0) burstRef.current = Math.max(0, burstRef.current - delta);
