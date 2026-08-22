@@ -8,6 +8,8 @@ This project was built with [Lovable](https://lovable.dev).
 
 **Live app**: https://harsh-box-canvas.lovable.app
 
+**Live site**: https://harshsharaff.github.io/ShreeHarshIndustries/
+
 ## Build with Lovable
 
 Continue developing this project in the [Lovable editor](https://lovable.dev/projects/df315fca-6086-438d-bd25-4614a843bb09).
