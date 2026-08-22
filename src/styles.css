@@ -100,6 +100,9 @@
 
 @utility text-balance { text-wrap: balance; }
 
+/* ponytail: Lovable hosting injects #lovable-badge into published HTML (cdn.gpteng.co CSS + markup). Not in this repo; @lovable.dev/vite-tanstack-config has no badge option. Official hide: Project settings → Publishing → Hide Lovable badge (Pro+). */
+#lovable-badge { display: none !important; }
+
 /* Corrugated flute pattern - repeating vertical wave */
 @utility bg-flute {
   background-image: repeating-linear-gradient(
