@@ -19,7 +19,6 @@ import { SiteLayout } from "@/components/site-chrome";
 import { HeroConveyor } from "@/components/HeroConveyor";
 import { QuoteForm } from "@/components/quote-form";
 import {
-  COMPANY,
   faqs,
   featuredProductIds,
   industries,
@@ -99,23 +98,19 @@ function Hero() {
           initial={reduced ? false : { opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.8 }}
-          className="mt-6 font-display text-4xl sm:text-6xl lg:text-7xl leading-[0.95] text-balance max-w-4xl"
+          className="mt-6 font-display text-4xl sm:text-6xl lg:text-7xl leading-[0.95] text-balance max-w-3xl"
         >
-          Corrugated boxes, cut to your SKU — from a 5-ply plant in Tumkur.
+          Corrugated boxes, cut to your size.
         </motion.h1>
 
-        <p className="mt-5 max-w-2xl text-muted-foreground text-base sm:text-lg">
-          Tell us L × W × H, ply and quantity. {COMPANY.shortName} quotes, tests GSM / BCT / ECT, and dispatches on our own vehicles.
+        <p className="mt-5 max-w-xl text-muted-foreground text-base sm:text-lg">
+          Send the size. We quote from our plant in Tumkur.
         </p>
 
-        <div className="my-8 w-full">
-          <HeroConveyor />
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             to="/contact"
-            className="group inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3 hover:bg-accent transition-colors"
+            className="group inline-flex items-center gap-2 rounded-full bg-accent text-accent-foreground px-6 py-3 hover:brightness-110 transition"
           >
             Request a quote
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -126,6 +121,10 @@ function Hero() {
           >
             See box types
           </Link>
+        </div>
+
+        <div className="mt-10 w-full">
+          <HeroConveyor />
         </div>
       </motion.div>
     </section>

@@ -60,7 +60,7 @@ export function Nav() {
           </a>
           <Link
             to="/contact"
-            className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground text-sm px-4 py-2 hover:bg-accent transition-colors"
+            className="hidden sm:inline-flex items-center gap-2 rounded-full bg-accent text-accent-foreground text-sm px-4 py-2 hover:brightness-110 transition"
           >
             Get a quote
           </Link>
