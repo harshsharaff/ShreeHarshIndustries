@@ -1,5 +1,6 @@
-import { motion, useAnimationFrame } from "framer-motion";
+import { useAnimationFrame } from "framer-motion";
 import { useRef, useState } from "react";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 /**
  * Side-view corrugated packaging line.
@@ -9,6 +10,8 @@ import { useRef, useState } from "react";
  */
 export function HeroConveyor() {
   const [hover, setHover] = useState(false);
+  const [holding, setHolding] = useState(false);
+  const reduced = usePrefersReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
   const rollerA = useRef<HTMLDivElement>(null);
   const rollerB = useRef<HTMLDivElement>(null);
@@ -35,7 +38,7 @@ export function HeroConveyor() {
   useAnimationFrame((_, delta) => {
     if (burstRef.current > 0) burstRef.current = Math.max(0, burstRef.current - delta);
     const boost = burstRef.current > 0 ? 2.2 : 1;
-    const speed = (hover ? 0.04 : 0.11) * boost;
+    const speed = reduced ? 0 : (hover || holding ? 0.04 : 0.11) * boost;
     tRef.current = (tRef.current + delta * speed) % beltWidth;
     rot.current = (rot.current + delta * speed * 1.6) % 360;
 
@@ -86,9 +89,16 @@ export function HeroConveyor() {
       ref={containerRef}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => { burstRef.current = 700; }}
-      className="relative w-full mx-auto max-w-3xl h-[380px] sm:h-[440px] pb-8 cursor-pointer select-none"
-      aria-label="Interactive corrugated packaging line"
+      onPointerDown={(e) => {
+        if (e.pointerType === "touch") setHolding(true);
+      }}
+      onPointerUp={() => setHolding(false)}
+      onPointerCancel={() => setHolding(false)}
+      onClick={() => {
+        if (!reduced) burstRef.current = 700;
+      }}
+      className="relative w-full mx-auto max-w-3xl h-[380px] sm:h-[440px] pb-8 cursor-pointer select-none touch-manipulation"
+      aria-label="Interactive corrugated packaging line. Hold to slow, tap to speed up."
     >
       {/* Ceiling / factory beam */}
       <div className="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-foreground/70 to-foreground/40" />
@@ -173,14 +183,23 @@ export function HeroConveyor() {
       <div className="absolute right-6 bottom-8 w-2 h-8 bg-foreground/60" />
       <div className="absolute inset-x-0 bottom-8 h-1 bg-foreground/40" />
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="absolute bottom-1 left-0 right-0 text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground"
-      >
-        Hover to slow · Click to boost
-      </motion.div>
+      <div className="absolute bottom-1 left-0 right-0 flex flex-col items-center gap-2">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+          {reduced ? "Stamping station" : "Hold to slow · Tap to boost"}
+        </p>
+        {reduced ? null : (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              burstRef.current = 900;
+            }}
+            className="text-[10px] uppercase tracking-[0.2em] rounded-full border border-border px-3 py-1 hover:border-accent hover:text-accent"
+          >
+            Boost line
+          </button>
+        )}
+      </div>
 
     </div>
   );
