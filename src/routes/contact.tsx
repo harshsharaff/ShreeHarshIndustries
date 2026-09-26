@@ -43,7 +43,7 @@ function ContactPage() {
           Send the size. We send the rate.
         </h1>
         <p className="mt-6 max-w-2xl text-muted-foreground">
-          Fill the form — WhatsApp and email open with the message already written. Or call {COMPANY.contactName} on{" "}
+          Fill the form and WhatsApp or email opens with the message already written. Or call {COMPANY.contactName} on{" "}
           <a className="text-accent hover:underline" href={`tel:${COMPANY.phoneTel}`}>
             {COMPANY.phoneDisplay}
           </a>

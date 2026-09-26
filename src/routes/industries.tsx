@@ -41,7 +41,7 @@ function IndustriesPage() {
             Tell us the product. We specify the board.
           </h1>
           <p className="mt-6 max-w-2xl text-muted-foreground">
-            Tap a sector for the carton styles we usually run. Then send sizes — we will confirm ply, print and lead time.
+            Tap a sector for the carton styles we usually run. Then send sizes and we will confirm ply, print and lead time.
           </p>
 
           <ul className="mt-14 grid md:grid-cols-2 gap-4">

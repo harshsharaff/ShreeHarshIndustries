@@ -67,7 +67,7 @@ function ErrorComponent({ error, reset }: { error: unknown; reset: () => void })
   );
 }
 
-const title = `${COMPANY.name} — Corrugated Boxes, Tumkur`;
+const title = `${COMPANY.name} | Corrugated Boxes, Tumkur`;
 const description = COMPANY.description;
 const ogImage = `${COMPANY.siteUrl}/og.jpg`;
 

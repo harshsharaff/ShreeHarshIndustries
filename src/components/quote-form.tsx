@@ -40,9 +40,9 @@ export function QuoteForm({ defaultProductId, defaultPly, compact = false, id = 
   const message = useMemo(
     () =>
       formatQuoteMessage({
-        name: name.trim() || "—",
+        name: name.trim() || "Not given",
         company: company.trim(),
-        phone: phone.trim() || "—",
+        phone: phone.trim() || "Not given",
         email: email.trim(),
         product: product.title,
         length,
@@ -71,7 +71,7 @@ export function QuoteForm({ defaultProductId, defaultPly, compact = false, id = 
 
   function openEmail() {
     if (!validate()) return;
-    window.location.href = mailtoUrl(`Box quote — ${company.trim() || name.trim()}`, message);
+    window.location.href = mailtoUrl(`Box quote for ${company.trim() || name.trim()}`, message);
   }
 
   return (
@@ -110,7 +110,7 @@ export function QuoteForm({ defaultProductId, defaultPly, compact = false, id = 
               <select className={fieldClass} value={ply} onChange={(e) => setPly(e.target.value)}>
                 <option>3 ply</option>
                 <option>5 ply</option>
-                <option>Not sure — specify for me</option>
+                <option>Not sure, please specify</option>
               </select>
             </Field>
           </div>

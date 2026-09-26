@@ -90,7 +90,7 @@ export const products = [
     ply: ["3 ply", "5 ply"],
     uses: "Brand identity, handling marks, batch codes",
     desc: "Flexo print your logo, SKU, fragile marks and handling instructions so every carton is identifiable in the warehouse and on the truck.",
-    specs: ["Flexo print", "1–3 colours typical", "Brand + handling marks"],
+    specs: ["Flexo print", "1 to 3 colours typical", "Brand + handling marks"],
   },
 ] as const;
 
@@ -249,13 +249,13 @@ export function formatQuoteMessage(input: {
     "I would like a quote for corrugated boxes.",
     "",
     `Name: ${input.name}`,
-    `Company: ${input.company || "—"}`,
+    `Company: ${input.company || "Not given"}`,
     `Phone: ${input.phone}`,
     input.email ? `Email: ${input.email}` : null,
     `Product: ${input.product}`,
-    `Size (mm): ${input.length || "—"} × ${input.width || "—"} × ${input.height || "—"} (L × W × H)`,
+    `Size (mm): ${input.length || "?"} × ${input.width || "?"} × ${input.height || "?"} (L × W × H)`,
     `Ply: ${input.ply}`,
-    `Quantity: ${input.quantity || "—"}`,
+    `Quantity: ${input.quantity || "Not given"}`,
     input.notes ? `Notes: ${input.notes}` : null,
   ]
     .filter(Boolean)

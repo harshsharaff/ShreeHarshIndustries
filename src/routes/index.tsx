@@ -188,7 +188,7 @@ function Products() {
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-accent">01 What you can order</p>
-          <h2 className="mt-4 text-4xl sm:text-5xl max-w-2xl text-balance">Boxes, folders and internals — priced to your size.</h2>
+          <h2 className="mt-4 text-4xl sm:text-5xl max-w-2xl text-balance">Boxes, folders and internals, priced to your size.</h2>
         </div>
         <p className="max-w-md text-muted-foreground">
           Every carton is cut to inner dimensions. Pick a style, send sizes, get a WhatsApp quote.
@@ -375,7 +375,7 @@ function QuoteBand() {
           Send sizes. We send a <span className="italic text-accent">price</span>.
         </h2>
         <p className="mt-5 max-w-xl mx-auto text-center text-primary-foreground/70">
-          WhatsApp or email — both open with your dimensions already filled in. No account, no portal.
+          WhatsApp or email. Both open with your dimensions already filled in. No account, no portal.
         </p>
         <div className="mt-12 rounded-2xl bg-background text-foreground p-6 sm:p-8">
           <QuoteForm compact />
