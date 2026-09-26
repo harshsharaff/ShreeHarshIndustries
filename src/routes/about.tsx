@@ -13,7 +13,7 @@ export const Route = createFileRoute("/about")({
       {
         name: "description",
         content:
-          "Shree Harsh Industries runs a fully automatic 5-ply corrugated plant in Vasantha Narasapura, Tumkur — testing GSM, BCT and ECT in-house.",
+          "Shree Harsh Industries runs a fully automatic 5-ply corrugated plant in Vasantha Narasapura, Tumkur, testing GSM, BCT and ECT in-house.",
       },
       { property: "og:title", content: "About · Shree Harsh Industries" },
       {
@@ -32,7 +32,7 @@ function AboutPage() {
       <section className="pt-32 pb-12 max-w-7xl mx-auto px-6">
         <p className="text-xs uppercase tracking-[0.3em] text-accent">The plant</p>
         <h1 className="mt-4 font-display text-5xl sm:text-6xl text-balance max-w-4xl">
-          {COMPANY.name} makes corrugated boxes in Tumkur — not a trading desk.
+          {COMPANY.name} makes corrugated boxes in Tumkur.
         </h1>
         <p className="mt-6 max-w-3xl text-muted-foreground text-lg">
           We run a fully automatic 5-ply line at Vasantha Narasapura Industrial Area. Board is corrugated, converted and tested here, then moved on our own vehicles. Capacity is about 3,000 tonnes a month, with 250 KVA backup so the line does not wait on the grid.
