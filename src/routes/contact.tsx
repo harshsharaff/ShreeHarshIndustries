@@ -6,11 +6,13 @@ import { COMPANY } from "@/lib/company";
 
 type ContactSearch = {
   product?: string;
+  ply?: 3 | 5;
 };
 
 export const Route = createFileRoute("/contact")({
   validateSearch: (search: Record<string, unknown>): ContactSearch => ({
     product: typeof search.product === "string" ? search.product : undefined,
+    ply: Number(search.ply) === 3 ? 3 : Number(search.ply) === 5 ? 5 : undefined,
   }),
   component: ContactPage,
   head: () => ({
@@ -31,7 +33,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const { product } = Route.useSearch();
+  const { product, ply } = Route.useSearch();
 
   return (
     <SiteLayout>
@@ -50,7 +52,7 @@ function ContactPage() {
 
         <div className="mt-12 grid lg:grid-cols-[1fr_280px] gap-10 items-start">
           <div className="rounded-2xl border border-border bg-card p-6 sm:p-8">
-            <QuoteForm defaultProductId={product} />
+            <QuoteForm defaultProductId={product} defaultPly={ply ? `${ply} ply` : undefined} />
           </div>
           <div className="space-y-4">
             <Row icon={Phone} label={COMPANY.contactName} value={COMPANY.phoneDisplay} href={`tel:${COMPANY.phoneTel}`} />

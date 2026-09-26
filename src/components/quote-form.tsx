@@ -8,11 +8,12 @@ const fieldClass =
 
 type QuoteFormProps = {
   defaultProductId?: string;
+  defaultPly?: string;
   compact?: boolean;
   id?: string;
 };
 
-export function QuoteForm({ defaultProductId, compact = false, id = "quote" }: QuoteFormProps) {
+export function QuoteForm({ defaultProductId, defaultPly, compact = false, id = "quote" }: QuoteFormProps) {
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [phone, setPhone] = useState("");
@@ -21,7 +22,7 @@ export function QuoteForm({ defaultProductId, compact = false, id = "quote" }: Q
   const [length, setLength] = useState("");
   const [width, setWidth] = useState("");
   const [height, setHeight] = useState("");
-  const [ply, setPly] = useState("5 ply");
+  const [ply, setPly] = useState(defaultPly ?? "5 ply");
   const [quantity, setQuantity] = useState("");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
@@ -29,6 +30,10 @@ export function QuoteForm({ defaultProductId, compact = false, id = "quote" }: Q
   useEffect(() => {
     if (defaultProductId) setProductId(defaultProductId);
   }, [defaultProductId]);
+
+  useEffect(() => {
+    if (defaultPly) setPly(defaultPly);
+  }, [defaultPly]);
 
   const product = products.find((p) => p.id === productId) ?? products[0];
 
